@@ -1,6 +1,37 @@
+'use client'
+
 import Image from "next/image";
+import { useEffect, useState } from 'react';
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
 
 export default function Home() {
+
+  const [location, setLocation] = useState<Coordinates | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      (err) => {
+        setError(`Error getting location: ${err.message}`);
+      }
+    );
+  }, []);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -49,6 +80,16 @@ export default function Home() {
           >
             Read our docs
           </a>
+        </div>
+        <div className="flex gap-4 items-center flex-col sm:flex-row">
+        {error && <p className="text-red-500">{error}</p>}
+      {location ? (
+        <p>
+          Latitude: {location.latitude}, Longitude: {location.longitude}
+        </p>
+      ) : (
+        !error && <p>Getting location...</p>
+      )}
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
