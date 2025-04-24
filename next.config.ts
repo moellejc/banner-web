@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { fallbackModeToFallbackField } from 'next/dist/lib/fallback';
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -11,6 +12,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  turbopack:{
+    resolveAlias:{
+      tls: false,
+      net: false,
+      fs: false,
+      http2: false,
+      child_process: false
+    }
+  }
 };
 
 export default nextConfig;
