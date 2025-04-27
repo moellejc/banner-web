@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-
-export type Coordinates = {
-  latitude: number;
-  longitude: number;
-};
+import { Coordinates } from '@/types/coordinates';
 
 export const useLocation = () => {
   const [location, setLocation] = useState<Coordinates | null>(null);

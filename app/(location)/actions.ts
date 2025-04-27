@@ -1,6 +1,6 @@
 'use server';
 
-import { placesClient } from "@/lib/maps/google";
+import { placesClient } from "@/lib/location/google";
 
 export const callPlacesNearby = async (lat: number, lon: number): Promise<any[]> => {
     let center = new google.maps.LatLng(lat, lon);
