@@ -4,7 +4,6 @@ import { placesClient } from "@/lib/location/google";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log(body);
     const {
       latitude,
       longitude,
@@ -19,7 +18,6 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    // let center = new google.maps.LatLng(latitude, longitude);
     // Construct request
     const placeRequest = {
       // required parameters
@@ -59,15 +57,12 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log(placeRequest.locationRestriction.circle.center);
     console.log(placesResponse);
     return new Response(JSON.stringify(placesResponse), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.log("Internal server error finding place from location coords");
-    console.log(error);
     return new Response(
       `An error occurred while processing your request! ${error}`,
       {

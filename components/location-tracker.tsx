@@ -10,7 +10,6 @@ export const LocationTracker = () => {
     const { refreshLocationInterval } = useLocationStore((state)=>state);
 
     useEffect(() => {
-        console.log("call refresh location interval");
         refreshLocationInterval();
     }, [refreshLocationInterval]);
 

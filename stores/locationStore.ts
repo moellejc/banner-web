@@ -4,6 +4,10 @@ import { Coordinates } from "@/types/coordinates";
 import { createStore } from "zustand/vanilla";
 import { getCurrentLocation } from "@/lib/location/utilsClient";
 import { Place } from "@/types/places";
+import { distance } from "@turf/distance";
+import { point } from "@turf/helpers";
+
+const DISTANCE_UPDATE_THRESHOLD = 50; // 50 meters
 
 export type LocationState = {
   coordinates: Coordinates;
@@ -52,10 +56,18 @@ export const createLocationStore = (
     ...initState,
     updateLocation: (coords: Coordinates) => {
       // set the location coordinates
-      set({ coordinates: coords });
+      const oldCoords = get().coordinates;
+      const locationDistance = distance(
+        point([coords.latitude, coords.longitude]),
+        point([oldCoords.latitude, oldCoords.longitude]),
+        { units: "meters" }
+      );
 
-      // update the place
-      get().updatePlace();
+      // update the place if distance threshold for new location is exceeded
+      if (locationDistance > DISTANCE_UPDATE_THRESHOLD) {
+        set({ coordinates: coords });
+        get().updatePlace();
+      }
     },
     updatePlace: async (): Promise<void> => {
       const coords = get().coordinates;
@@ -66,10 +78,8 @@ export const createLocationStore = (
         },
         body: JSON.stringify({ coords }),
       });
-
-      console.log(response);
-      console.log(response);
-      console.log(response.text);
+      const data = await response.json();
+      console.log(data);
     },
     refreshLocationInterval: () => {
       // get the current latitude and longitude every 10 seconds
