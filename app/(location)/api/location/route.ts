@@ -1,5 +1,9 @@
 import { auth } from "@/app/(auth)/auth";
-import { placesClient } from "@/lib/location/google";
+import {
+  reverseGeocode,
+  searchPlacesByCoords,
+  placeDetailsFromID,
+} from "@/lib/location/google";
 
 export async function POST(request: Request) {
   try {
@@ -18,47 +22,14 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    // Construct request
-    const placeRequest = {
-      // required parameters
-      fieldMask: [
-        "displayName",
-        "location",
-        "businessStatus",
-        "formattedAddress",
-        "types",
-      ],
-      locationRestriction: {
-        circle: {
-          center: {
-            latitude,
-            longitude,
-          },
-          radius: 500,
-        },
-      },
-      // optional parameters
-      // includedPrimaryTypes: ['restaurant'],
-      maxResultCount: 20,
-      rankPreference: "POPULARITY",
-      language: "en-US",
-      region: "us",
-    };
+    const addressResponse = await reverseGeocode({ latitude, longitude });
+    const placeDetails = await placeDetailsFromID(
+      addressResponse.results[0].place_id
+    );
 
-    // Run Maps Place Request
+    // const placesNearby  = await searchPlacesByCoords({latitude, longitude});
 
-    //@ts-ignore
-    const placesResponse = await placesClient.searchNearby(placeRequest, {
-      otherArgs: {
-        headers: {
-          "X-Goog-FieldMask":
-            "places.displayName,places.displayName,places.location,places.businessStatus,places.formattedAddress,places.types",
-        },
-      },
-    });
-
-    console.log(placesResponse);
-    return new Response(JSON.stringify(placesResponse), {
+    return new Response(JSON.stringify(placeDetails), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
