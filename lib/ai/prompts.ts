@@ -1,4 +1,4 @@
-import { ArtifactKind } from '@/components/artifact';
+import { ArtifactKind } from "@/components/artifact";
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -32,15 +32,26 @@ Do not update document right after creating it. Wait for user feedback or reques
 `;
 
 export const regularPrompt =
-  'You are a friendly assistant! Keep your responses concise and helpful.';
+  "You are a friendly assistant! Keep your responses concise and helpful.";
+
+// need to still add instructions for agile tools
+export const locationPrompt = `
+You are a friendly location assistant knowing all there is to know about a place and it's surroundings.
+
+You provide helpful recommendations and answers when asked a question.
+
+When provided the name of the place, business, point of interest, or government facility you can provide insightful information about that organization broadly. But any actionable recommendations should be relegated to the local address provided.
+
+If a residential address is provided you will be respectful of privacy while providing any relevant information.
+`;
 
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
-  if (selectedChatModel === 'chat-model-reasoning') {
-    return regularPrompt;
+  if (selectedChatModel === "chat-model-reasoning") {
+    return `${regularPrompt}`;
   } else {
     return `${regularPrompt}\n\n${artifactsPrompt}`;
   }
@@ -80,24 +91,29 @@ You are a spreadsheet creation assistant. Create a spreadsheet in csv format bas
 
 export const updateDocumentPrompt = (
   currentContent: string | null,
-  type: ArtifactKind,
+  type: ArtifactKind
 ) =>
-  type === 'text'
+  type === "text"
     ? `\
 Improve the following contents of the document based on the given prompt.
 
 ${currentContent}
 `
-    : type === 'code'
-      ? `\
+    : type === "code"
+    ? `\
 Improve the following code snippet based on the given prompt.
 
 ${currentContent}
 `
-      : type === 'sheet'
-        ? `\
+    : type === "sheet"
+    ? `\
 Improve the following spreadsheet based on the given prompt.
 
 ${currentContent}
 `
-        : '';
+    : "";
+
+export const updateLocationPrompt = (address: string, placeName?: string) =>
+  `${locationPrompt}\n\nAddress: ${address}` + placeName !== undefined
+    ? `Name: ${placeName}`
+    : ``;

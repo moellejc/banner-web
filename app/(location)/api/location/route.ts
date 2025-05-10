@@ -22,12 +22,24 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
+    // convert lat, lon into an address
     const addressResponse = await reverseGeocode({ latitude, longitude });
+    if (
+      !Object.hasOwn(addressResponse, "results") ||
+      addressResponse.results.length < 1
+    ) {
+      return new Response(
+        `An error occurred while finding geocoded location!`,
+        {
+          status: 500,
+        }
+      );
+    }
+
+    // convert address into details about a place
     const placeDetails = await placeDetailsFromID(
       addressResponse.results[0].place_id
     );
-
-    // const placesNearby  = await searchPlacesByCoords({latitude, longitude});
 
     return new Response(JSON.stringify(placeDetails), {
       status: 201,

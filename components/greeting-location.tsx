@@ -4,37 +4,26 @@ import { useLocationStore } from '@/stores/locationStoreProvider';
 
 export const GreetingLocation = () => {
 
-    const [loadingPlace, setLoadingPlaces] = useState<boolean>(true);
-    const [place, setPlace] = useState<string>("");
     const { location, error, loadingLocation } = useLocation();
-    const { coordinates } = useLocationStore((state)=>state);
-
-    useEffect(()=>{
-        // const fetchCurrentPlace = async ()=>{
-        //     try{
-        //         if(location) {
-        //             const places = await callPlacesNearby(location.latitude, location.longitude);
-        //         }
-
-        //         setPlace("A Place's Name");
-        //     } catch (error) {
-        //         console.error('Error fetching place:', error);
-        //         setPlace("Couldn't find your location");
-        //     } finally {
-        //         setLoadingPlaces(false);
-                
-        //     }
-            
-        // };
+    const { coordinates, place } = useLocationStore((state)=>state);
+    
+    const getDisplayName = (placeData:any):string => {
         
+        // check for at least an address
+        if(!Object.hasOwn(place, "formattedAddress")) return "";
 
-        // if (!loadingLocation) fetchCurrentPlace();
+        // check for key attributes in place data for place name
+        if (!Object.hasOwn(placeData, 'displayName') || !Object.hasOwn(placeData.displayName, 'text')) return placeData.formattedAddress;
 
-    },[]);
+        // check if the display name is just the street from the formatted address
+        if (placeData.formattedAddress.startsWith(placeData.displayName.text)) return placeData.formattedAddress;
+
+        return placeData.displayName.text;
+    };
 
     return (
         <div>
-            Welcome to PLACE!
+            { Object.hasOwn(place, "formattedAddress") ?  `Welcome to ${place.formattedAddress}` : "Waiting on place information..."}!
             <hr/>
             Coordinates: { JSON.stringify(coordinates) }
         </div>

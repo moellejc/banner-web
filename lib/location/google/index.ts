@@ -14,22 +14,27 @@ export const reverseGeocode = async (coords: Coordinates): Promise<any> => {
       method: "GET",
     }
   );
+
   const responseObj = await response.json();
+  // console.log(responseObj);
   return responseObj;
 };
 
 export const placeDetailsFromID = async (placeId: string): Promise<any> => {
-  const request = { name: placeId };
-  const response = await placesClient.getPlace(request, {
-    otherArgs: {
+  const response = await fetch(
+    `https://places.googleapis.com/v1/places/${placeId}`,
+    {
+      method: "GET",
       headers: {
-        "X-Goog-FieldMask":
-          "places.displayName,places.displayName,places.location,places.businessStatus,places.formattedAddress,places.types",
+        "X-Goog-Api-Key": `${process.env.GOOGLE_MAPS_API_KEY}`,
+        "X-Goog-FieldMask": "*",
+        "Content-Type": "application/json",
       },
-    },
-  });
+    }
+  );
 
-  return response;
+  const responseObj = await response.json();
+  return responseObj;
 };
 
 export const searchPlacesByCoords = async (
