@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     } = body.coords;
 
     const session = await auth();
-
+    
     if (!session?.user?.id) {
       return new Response("Unauthorized", { status: 401 });
     }

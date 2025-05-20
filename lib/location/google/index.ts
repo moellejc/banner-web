@@ -19,17 +19,17 @@ export const reverseGeocode = async (coords: Coordinates): Promise<any> => {
 };
 
 export const placeDetailsFromID = async (placeId: string): Promise<any> => {
-  const request = { name: placeId };
-  const response = await placesClient.getPlace(request, {
-    otherArgs: {
+  const response = await fetch(
+    `https://places.googleapis.com/v1/places/${placeId}?key=${process.env.GOOGLE_MAPS_API_KEY}`,
+    {
+      method: "GET",
       headers: {
-        "X-Goog-FieldMask":
-          "places.displayName,places.displayName,places.location,places.businessStatus,places.formattedAddress,places.types",
-      },
-    },
-  });
-
-  return response;
+        "X-Goog-FieldMask": "*"
+      }
+    }
+  );
+  const responseObj = await response.json();
+  return responseObj;
 };
 
 export const searchPlacesByCoords = async (

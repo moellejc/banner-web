@@ -23,6 +23,7 @@ import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { useLocationStore } from '@/stores/locationStoreProvider';
 
 function PureMultimodalInput({
   chatId,
@@ -52,6 +53,7 @@ function PureMultimodalInput({
   className?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { place } = useLocationStore((state)=>state);
   const { width } = useWindowSize();
 
   useEffect(() => {
@@ -72,6 +74,10 @@ function PureMultimodalInput({
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = '98px';
     }
+  };
+
+  const placeChatInfo = ():any => {
+    return {formattedAddress: 'formattedAddress' in place ? place.formattedAddress : '', name: 'displayName' in place ? place.displayName.text : ''};
   };
 
   const [localStorageInput, setLocalStorageInput] = useLocalStorage(
@@ -108,6 +114,7 @@ function PureMultimodalInput({
 
     handleSubmit(undefined, {
       experimental_attachments: attachments,
+      body: {place: placeChatInfo()}
     });
 
     setAttachments([]);

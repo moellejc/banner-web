@@ -11,7 +11,7 @@ const DISTANCE_UPDATE_THRESHOLD = 50; // 50 meters
 
 export type LocationState = {
   coordinates: Coordinates;
-  place: Place;
+  place: any | null;
   coordsTimerId: NodeJS.Timeout | null;
 };
 
@@ -31,9 +31,7 @@ export const initLocationStore = (): LocationState => {
       latitude: 0,
       longitude: 0,
     },
-    place: {
-      address: "",
-    },
+    place: null,
     coordsTimerId: null,
   };
 };
@@ -43,9 +41,7 @@ export const defaultInitState: LocationState = {
     latitude: 0,
     longitude: 0,
   },
-  place: {
-    address: "",
-  },
+  place: null,
   coordsTimerId: null,
 };
 
@@ -79,7 +75,7 @@ export const createLocationStore = (
         body: JSON.stringify({ coords }),
       });
       const data = await response.json();
-      console.log(data);
+      set({place: data});
     },
     refreshLocationInterval: () => {
       // get the current latitude and longitude every 10 seconds

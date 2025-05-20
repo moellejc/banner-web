@@ -1,42 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from '@/hooks/use-location';
 import { useLocationStore } from '@/stores/locationStoreProvider';
 
 export const GreetingLocation = () => {
 
-    const [loadingPlace, setLoadingPlaces] = useState<boolean>(true);
-    const [place, setPlace] = useState<string>("");
-    const { location, error, loadingLocation } = useLocation();
-    const { coordinates } = useLocationStore((state)=>state);
+    const { place } = useLocationStore((state)=>state);
 
-    useEffect(()=>{
-        // const fetchCurrentPlace = async ()=>{
-        //     try{
-        //         if(location) {
-        //             const places = await callPlacesNearby(location.latitude, location.longitude);
-        //         }
-
-        //         setPlace("A Place's Name");
-        //     } catch (error) {
-        //         console.error('Error fetching place:', error);
-        //         setPlace("Couldn't find your location");
-        //     } finally {
-        //         setLoadingPlaces(false);
-                
-        //     }
-            
-        // };
+    const loadingLocation = (placeData: any):string => {
         
+        const loadingText = "Loading Your Location...";
+        if (placeData === null) return loadingText;
+        if (!('displayName' in placeData) || !('text' in placeData.displayName) || !('formattedAddress' in placeData)) return loadingText;
 
-        // if (!loadingLocation) fetchCurrentPlace();
-
-    },[]);
+        return `Welcome to ${placeData.displayName.text ? placeData.displayName.text : placeData.formattedAddress }`;
+    };
 
     return (
         <div>
-            Welcome to PLACE!
-            <hr/>
-            Coordinates: { JSON.stringify(coordinates) }
+            {loadingLocation(place)}
         </div>
     );
 };

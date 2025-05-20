@@ -6,7 +6,7 @@ import {
   streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPrompt } from '@/lib/ai/prompts';
+import { systemPrompt, dynamicLocationSystemPrompt } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -34,11 +34,16 @@ export async function POST(request: Request) {
       id,
       messages,
       selectedChatModel,
+      place
     }: {
       id: string;
       messages: Array<UIMessage>;
       selectedChatModel: string;
+      place: any;
     } = await request.json();
+
+    console.log(place);
+    console.log(dynamicLocationSystemPrompt(place.formattedAddress, place.name));
 
     const session = await auth();
 
@@ -83,7 +88,7 @@ export async function POST(request: Request) {
       execute: (dataStream) => {
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel }),
+          system: dynamicLocationSystemPrompt(place.formattedAddress, place.name),
           messages,
           maxSteps: 5,
           experimental_activeTools:
@@ -159,6 +164,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
+    console.log(error);
     return new Response('An error occurred while processing your request!', {
       status: 500,
     });
