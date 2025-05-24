@@ -22,17 +22,14 @@ export const reverseGeocode = async (coords: Coordinates): Promise<any> => {
 
 export const placeDetailsFromID = async (placeId: string): Promise<any> => {
   const response = await fetch(
-    `https://places.googleapis.com/v1/places/${placeId}`,
+    `https://places.googleapis.com/v1/places/${placeId}?key=${process.env.GOOGLE_MAPS_API_KEY}`,
     {
       method: "GET",
       headers: {
-        "X-Goog-Api-Key": `${process.env.GOOGLE_MAPS_API_KEY}`,
-        "X-Goog-FieldMask": "*",
-        "Content-Type": "application/json",
-      },
+        "X-Goog-FieldMask": "*"
+      }
     }
   );
-
   const responseObj = await response.json();
   return responseObj;
 };

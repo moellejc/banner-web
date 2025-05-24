@@ -1,31 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from '@/hooks/use-location';
 import { useLocationStore } from '@/stores/locationStoreProvider';
 
 export const GreetingLocation = () => {
 
-    const { location, error, loadingLocation } = useLocation();
-    const { coordinates, place } = useLocationStore((state)=>state);
-    
-    const getDisplayName = (placeData:any):string => {
+    const { place } = useLocationStore((state)=>state);
+
+    const loadingLocation = (placeData: any):string => {
         
-        // check for at least an address
-        if(!Object.hasOwn(place, "formattedAddress")) return "";
+        const loadingText = "Loading Your Location...";
+        if (placeData === null) return loadingText;
+        if (!('displayName' in placeData) || !('text' in placeData.displayName) || !('formattedAddress' in placeData)) return loadingText;
 
-        // check for key attributes in place data for place name
-        if (!Object.hasOwn(placeData, 'displayName') || !Object.hasOwn(placeData.displayName, 'text')) return placeData.formattedAddress;
-
-        // check if the display name is just the street from the formatted address
-        if (placeData.formattedAddress.startsWith(placeData.displayName.text)) return placeData.formattedAddress;
-
-        return placeData.displayName.text;
+        return `Welcome to ${placeData.displayName.text ? placeData.displayName.text : placeData.formattedAddress }`;
     };
 
     return (
         <div>
-            { Object.hasOwn(place, "formattedAddress") ?  `Welcome to ${place.formattedAddress}` : "Waiting on place information..."}!
-            <hr/>
-            Coordinates: { JSON.stringify(coordinates) }
+            {loadingLocation(place)}
         </div>
     );
 };
